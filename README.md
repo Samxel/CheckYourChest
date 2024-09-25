@@ -36,7 +36,7 @@ Whether you're away from your base or want to monitor your storage, CheckYourChe
 
 ---
 
-## How It Works🧑‍🔬
+## How It Works
 
 1. **Marking a Chest**  
    Use a custom item (`Marking Stick`) to mark any chest. When a chest is marked, its contents will be tracked and updated at regular intervals.
@@ -49,7 +49,7 @@ Whether you're away from your base or want to monitor your storage, CheckYourChe
 
 ---
 
-## Installation👨‍🔧
+## Installation
 
 1. **Requirements**
    - Minecraft Forge (Version 1.20.1 or above)
@@ -74,7 +74,7 @@ Whether you're away from your base or want to monitor your storage, CheckYourChe
    ```toml
    checkInterval = 12000  # Sends updates every 10 minutes (12000 ticks)
 
-## Usage✅
+## Usage
 
 1. **Command to Get the Marking Stick**  
    Use the `/cyc` command in the game to get the **Marking Stick**. This special item allows you to mark chests for monitoring.
