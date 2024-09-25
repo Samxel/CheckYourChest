@@ -1,8 +1,15 @@
-# CheckYourChest
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/aff5f6d0-e6aa-4339-9aeb-2bee402dbfe4" alt="checkyourchest_header""/>
+</p>
+<h1 align="center">CheckYourChest</h1>
 
-**CheckYourChest** is a Minecraft utility mod designed for both servers and single-player worlds, perfect for players managing farms or automated item systems. The mod allows players to mark specific chests, track their contents in real-time, and receive detailed inventories via a webhook directly to a Discord server. 
 
-Whether you're away from your base or want to monitor your storage, **CheckYourChest** provides a seamless way to stay updated on what's happening in your chests.
+
+
+<p align="center">
+  <strong>CheckYourChest</strong> is a Minecraft utility mod designed for both servers and single-player worlds, perfect for players managing farms or automated item systems. The mod allows players to mark specific chests, track their contents in real-time, and receive detailed inventories via a webhook directly to a Discord server.<br><br>
+Whether you're away from your base or want to monitor your storage, CheckYourChest provides a seamless way to stay updated on what's happening in your chests.
+</p>
 
 ---
 
@@ -10,6 +17,7 @@ Whether you're away from your base or want to monitor your storage, **CheckYourC
 
 - **Mark Any Chest**  
   Mark any single or double chest in your world and monitor its contents.
+
   
 - **Track Single and Double Chests**  
   Automatically handle both single and double chests with ease.
