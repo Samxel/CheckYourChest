@@ -62,3 +62,15 @@ Whether you're away from your base or want to monitor your storage, **CheckYourC
    You can customize how often chest updates are sent to the webhook by adjusting the `checkInterval` in the config file. This value is in ticks (20 ticks = 1 second). For example:
    ```toml
    checkInterval = 12000  # Sends updates every 10 minutes (12000 ticks)
+
+## Usage
+
+1. **Command to Get the Marking Stick**  
+   Use the `/cyc` command in the game to get the **Marking Stick**. This special item allows you to mark chests for monitoring.
+
+2. **Marking a Chest**  
+   To mark a chest, hold the **Marking Stick** and **sneak right-click** on the chest you want to track. The mod will start monitoring the contents of the chest and send updates to your webhook at the configured interval.
+
+3. **Unmarking a Chest**  
+   To unmark a chest, simply **sneak right-click** on the marked chest or any other block with the **Marking Stick**, and the chest will be unmarked.
+
