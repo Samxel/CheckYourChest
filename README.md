@@ -70,9 +70,9 @@ Whether you're away from your base or want to monitor your storage, CheckYourChe
    - Paste the webhook URL into the mod's configuration file (`config/checkyourchest-common.toml`).
 
 2. **Interval Settings**  
-   You can customize how often chest updates are sent to the webhook by adjusting the `checkInterval` in the config file. This value is in ticks (20 ticks = 1 second). For example:
+   You can customize how often chest updates are sent to the webhook by adjusting the `checkInterval` in the config file. This value is in minutes. For example:
    ```toml
-   checkInterval = 12000  # Sends updates every 10 minutes (12000 ticks)
+   checkInterval = 60  # Sends updates every hour
 
 ## Usage
 
