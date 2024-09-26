@@ -1,15 +1,26 @@
-# CheckYourChest
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/aff5f6d0-e6aa-4339-9aeb-2bee402dbfe4" alt="checkyourchest_header""/>
+</p>
 
-**CheckYourChest** is a Minecraft utility mod designed for both servers and single-player worlds, perfect for players managing farms or automated item systems. The mod allows players to mark specific chests, track their contents in real-time, and receive detailed inventories via a webhook directly to a Discord server. 
+<h1 align="center">CheckYourChest</h1>
 
-Whether you're away from your base or want to monitor your storage, **CheckYourChest** provides a seamless way to stay updated on what's happening in your chests.
+
+
+
+
+<p align="center">
+  <strong>CheckYourChest</strong> is a Minecraft utility mod designed for both servers and single-player worlds, perfect for players managing farms or automated item systems. The mod allows players to mark specific chests, track their contents in real-time, and receive detailed inventories via a webhook directly to a Discord server.<br><br>
+Whether you're away from your base or want to monitor your storage, CheckYourChest provides a seamless way to stay updated on what's happening in your chests. <br>
+  <img src="https://minecraft.wiki/images/Invicon_Chest.png" alt="Chest Icon" />
+</p>
 
 ---
 
-## Features
+## Features🛠️
 
 - **Mark Any Chest**  
   Mark any single or double chest in your world and monitor its contents.
+
   
 - **Track Single and Double Chests**  
   Automatically handle both single and double chests with ease.
@@ -50,7 +61,7 @@ Whether you're away from your base or want to monitor your storage, **CheckYourC
 
 ---
 
-## Configuration
+## Configuration🔧
 
 1. **Webhook Setup**  
    To set up a Discord webhook, follow these steps:
@@ -59,9 +70,9 @@ Whether you're away from your base or want to monitor your storage, **CheckYourC
    - Paste the webhook URL into the mod's configuration file (`config/checkyourchest-common.toml`).
 
 2. **Interval Settings**  
-   You can customize how often chest updates are sent to the webhook by adjusting the `checkInterval` in the config file. This value is in ticks (20 ticks = 1 second). For example:
+   You can customize how often chest updates are sent to the webhook by adjusting the `checkInterval` in the config file. This value is in minutes. For example:
    ```toml
-   checkInterval = 12000  # Sends updates every 10 minutes (12000 ticks)
+   checkInterval = 60  # Sends updates every hour
 
 ## Usage
 
@@ -74,3 +85,5 @@ Whether you're away from your base or want to monitor your storage, **CheckYourC
 3. **Unmarking a Chest**  
    To unmark a chest, simply **sneak right-click** on the marked chest or any other block with the **Marking Stick**, and the chest will be unmarked.
 
+---
+<p align="center">Made with Love ❤️</p>
