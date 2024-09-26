@@ -49,4 +49,12 @@ public class Config {
         isChunkForceLoaded = loadChunk;
 
     }
+
+    public static void setCheckInterval(int minuteCheckInterval) {
+        // Update the in-memory config value
+        CHECK_INTERVAL.set(minuteCheckInterval);
+
+        // Save the updated config value
+        checkInterval = (minuteCheckInterval * 60) * 20;
+    }
 }

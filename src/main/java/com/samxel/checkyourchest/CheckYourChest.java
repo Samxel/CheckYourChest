@@ -44,7 +44,7 @@ public class CheckYourChest {
     public static final Logger LOGGER = LogUtils.getLogger();
 
 
-    private int tickCounter = 0;
+    public static int tickCounter = 0;
     public static ChestBlockEntity selectedChestBlockEntity;
     public static ChestBlockEntity connectedChestBlockEntity;
 
@@ -273,8 +273,6 @@ public class CheckYourChest {
                         Component.literal("Removed marked chest.")
                 );
             }
-
         }
-
     }
 }
