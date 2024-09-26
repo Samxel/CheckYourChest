@@ -6,8 +6,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 @Mod.EventBusSubscriber(modid = CheckYourChest.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class Config
-{
+public class Config {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
 
@@ -19,17 +18,35 @@ public class Config
             .comment("Discord webhook url:")
             .define("webhookURL", "https://discord.com/api/webhooks/.../...");
 
+    private static final ForgeConfigSpec.BooleanValue FORCE_LOAD = BUILDER
+            .comment("Do you want to ForceLoad the chests chunk? (true, false)")
+            .define("isChunkForceLoaded", false);
 
     static final ForgeConfigSpec SPEC = BUILDER.build();
 
     public static int checkInterval;
     public static String webhookURL;
+    public static boolean isChunkForceLoaded;
 
 
     @SubscribeEvent
-    static void onLoad(final ModConfigEvent event)
-    {
+    static void onLoad(final ModConfigEvent event) {
         checkInterval = (CHECK_INTERVAL.get() * 60) * 20; //directly calculate the ticks
         webhookURL = DISCORD_WEBHOOK.get();
+        isChunkForceLoaded = FORCE_LOAD.get();
+    }
+
+    /**
+     * Changes the chunk load state and updates the config file.
+     *
+     * @param loadChunk The new state for chunk force-loading.
+     */
+    public static void changeLoadedChunk(Boolean loadChunk) {
+        // Update the in-memory config value
+        FORCE_LOAD.set(loadChunk);
+
+        // Save the updated config value
+        isChunkForceLoaded = loadChunk;
+
     }
 }

@@ -31,6 +31,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Objects;
 
 import static com.samxel.checkyourchest.EntityDataManager.loadData;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeJson;
@@ -54,7 +55,6 @@ public class CheckYourChest {
         MinecraftForge.EVENT_BUS.register(this);
         modEventBus.addListener(this::onLoadComplete);
 
-
         //register config
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
@@ -69,6 +69,10 @@ public class CheckYourChest {
     public void onServerStarted(ServerStartedEvent event) {
         LOGGER.info("Loading recent marked chest.");
         loadData(event.getServer().overworld());
+        LOGGER.info("Loading force loaded chunks");
+        if (Config.isChunkForceLoaded) {
+            ChunkLoader.forceLoadChunk(event.getServer().overworld(), ChunkLoader.getChunkPosFromBlockPos(selectedChestBlockEntity.getBlockPos()));
+        }
     }
 
     private void onLoadComplete(FMLLoadCompleteEvent event) {
@@ -244,7 +248,7 @@ public class CheckYourChest {
             if (chestType != ChestType.SINGLE) {
                 Direction connectedDirection = ChestBlock.getConnectedDirection(selectedChestBlockEntity.getBlockState());
                 BlockPos connectedPos = selectedChestBlockEntity.getBlockPos().relative(connectedDirection);
-                connectedChestBlockEntity = (ChestBlockEntity) selectedChestBlockEntity.getLevel().getBlockEntity(connectedPos);
+                connectedChestBlockEntity = (ChestBlockEntity) Objects.requireNonNull(selectedChestBlockEntity.getLevel()).getBlockEntity(connectedPos);
 
                 if (connectedChestBlockEntity != null) {
                     event.getEntity().sendSystemMessage(

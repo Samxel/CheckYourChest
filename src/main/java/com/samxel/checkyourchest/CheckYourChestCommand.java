@@ -2,6 +2,7 @@ package com.samxel.checkyourchest;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
@@ -21,7 +22,13 @@ import net.minecraft.world.item.enchantment.Enchantments;
 public class CheckYourChestCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("cyc")
-                .executes(CheckYourChestCommand::executeStart));
+                //give stick method
+                .executes(CheckYourChestCommand::executeStart)
+                //set if chest chunk should be force loaded
+                .then(Commands.literal("forceload")
+                        .then(Commands.argument("state", BoolArgumentType.bool())
+                                .executes(CheckYourChestCommand::executeForceLoad))));
+
     }
 
     private static int executeStart(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
@@ -56,4 +63,27 @@ public class CheckYourChestCommand {
 
         return Command.SINGLE_SUCCESS;
     }
+
+    private static int executeForceLoad(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        CommandSourceStack source = context.getSource();
+
+        boolean loadState = BoolArgumentType.getBool(context, "state");
+
+        //Updates it in Config file & class
+        Config.changeLoadedChunk(loadState);
+
+        //check if it should be force loaded
+        if (Config.isChunkForceLoaded) {
+            CheckYourChest.LOGGER.debug("ChunkForceLoading set to true via command.");
+            ChunkLoader.forceLoadChunk(source.getLevel(), ChunkLoader.getChunkPosFromBlockPos(CheckYourChest.selectedChestBlockEntity.getBlockPos()));
+        } else {
+            CheckYourChest.LOGGER.debug("ChunkForceLoading set to false via command.");
+            ChunkLoader.unforceLoadChunk(source.getLevel());
+        }
+
+        source.sendSuccess(() -> Component.literal("Set chunk force loading to " + loadState), true);
+
+        return Command.SINGLE_SUCCESS;
+    }
+
 }
