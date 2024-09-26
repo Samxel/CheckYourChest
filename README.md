@@ -84,6 +84,16 @@ Whether you're away from your base or want to monitor your storage, CheckYourChe
 
 3. **Unmarking a Chest**  
    To unmark a chest, simply **sneak right-click** on the marked chest or any other block with the **Marking Stick**, and the chest will be unmarked.
+   
+## Force Load Chunks
+
+You can also use the `/cyc forceload <true|false>` command to enable or disable chunk force loading for marked chests. This ensures that the chunk where the chest is located remains loaded, even if no players are nearby.
+
+Additionally, you can configure this setting in the mod's configuration file (`config/checkyourchest-common.toml`). For example:
+```toml
+forceLoadChunks = true  # Ensures marked chests' chunks are always loaded
+```
+By default, chunk force loading is disabled. If enabled, chunks containing marked chests will remain loaded to guarantee uninterrupted monitoring and updates.
 
 ---
 <p align="center">Made with Love ❤️</p>
