@@ -2,7 +2,7 @@
   <img src="https://github.com/user-attachments/assets/aff5f6d0-e6aa-4339-9aeb-2bee402dbfe4" alt="checkyourchest_header""/>
 </p>
 
-<h1 align="center">CheckYourChest</h1>
+<h1 align="center">CheckYourChest<br>1.20.1</h1>
 
 
 
