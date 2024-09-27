@@ -71,7 +71,7 @@ Whether you're away from your base or want to monitor your storage, CheckYourChe
 
    Additionally, you can set the interval dynamically in-game using the following command:
    ```
-   /cyc setCheckInterval <minutes>
+   /cyc setWebhookURL "<webhookURL>"
    ```
 
 2. **Interval Settings**  
