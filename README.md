@@ -2,8 +2,7 @@
   <img src="https://github.com/user-attachments/assets/aff5f6d0-e6aa-4339-9aeb-2bee402dbfe4" alt="checkyourchest_header""/>
 </p>
 
-<h1 align="center">CheckYourChest</h1>
-<h2 align="center">1.21.1</h2>
+<h1 align="center">CheckYourChest<br>1.21.1</h1>
 
 
 
