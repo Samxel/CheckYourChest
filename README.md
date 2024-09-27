@@ -71,11 +71,11 @@ Whether you're away from your base or want to monitor your storage, CheckYourChe
 
 2. **Interval Settings**  
    You can customize how often chest updates are sent to the webhook by adjusting the `checkInterval` in the config file. This value is in minutes. For example:
-   ```toml
+   ```
    checkInterval = 60  # Sends updates every hour
    ```
    Additionally, you can set the interval dynamically in-game using the following command:
-   ```toml
+   ```
    /cyc setCheckInterval <minutes>
    ```
    
