@@ -2,6 +2,10 @@
   <img src="https://github.com/user-attachments/assets/aff5f6d0-e6aa-4339-9aeb-2bee402dbfe4" alt="checkyourchest_header""/>
 </p>
 
+<p align="center">
+  <a href="https://www.curseforge.com/minecraft/mc-mods/checkyourchest">CheckYourChest on CurseForge</a>
+</p>
+
 <h1 align="center">CheckYourChest<br>1.21.1</h1>
 
 
