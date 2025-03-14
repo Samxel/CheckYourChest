@@ -1,12 +1,14 @@
 package com.samxel.checkyourchest;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -43,7 +45,6 @@ public class CheckYourChest {
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
 
-
     public static int tickCounter = 0;
     public static ChestBlockEntity selectedChestBlockEntity;
     public static ChestBlockEntity connectedChestBlockEntity;
@@ -55,7 +56,7 @@ public class CheckYourChest {
         MinecraftForge.EVENT_BUS.register(this);
         modEventBus.addListener(this::onLoadComplete);
 
-        //register config
+        // register config
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
@@ -71,38 +72,40 @@ public class CheckYourChest {
         loadData(event.getServer().overworld());
         LOGGER.info("Loading force loaded chunks");
         if (Config.isChunkForceLoaded) {
-            ChunkLoader.forceLoadChunk(event.getServer().overworld(), ChunkLoader.getChunkPosFromBlockPos(selectedChestBlockEntity.getBlockPos()));
+            ChunkLoader.forceLoadChunk(event.getServer().overworld(),
+                ChunkLoader.getChunkPosFromBlockPos(selectedChestBlockEntity.getBlockPos()));
         }
     }
 
     private void onLoadComplete(FMLLoadCompleteEvent event) {
         LOGGER.info(MODID + " has been loaded successfully.");
-        LOGGER.info("Checking the chest every " + Config.checkInterval + " ticks (" + (Config.checkInterval / 20) + " seconds)");
-        LOGGER.info("Sending chest content to the following webhook:\n" + Config.webhookURL);
+        LOGGER.info("Checking the chest every " + Config.checkInterval + " ticks (" + Config.checkInterval + " minutes)");
+        LOGGER.info("Sending chest content to the following webhook:\n" + Config.webhookURL + "\n");
     }
 
-    private static void renderChestParticles(ServerLevel serverLevel, BlockPos blockPos) {
-
-        // Berechne die Position für die Partikel mittig über dem Block
+    private static void renderChestParticles(Level level, BlockPos blockPos) {
         double x = blockPos.getX() + 0.5;
-        double y = blockPos.getY() + 1.5; // 1 Block höher
+        double y = blockPos.getY() + 1.5;
         double z = blockPos.getZ() + 0.5;
 
-        // Erzeuge Partikel (hier: Beispiel mit Redstone-Partikeln)
-        assert serverLevel != null;
-        serverLevel.sendParticles(ParticleTypes.ENCHANT, x, y, z,
-                5, 0.2, 0.2, 0.2, 0.01); // Typ, Position, Anzahl, XYZ-Offset, Geschwindigkeit
-
+        if (level instanceof ServerLevel) {
+            ServerLevel serverLevel = (ServerLevel) level;
+            serverLevel.sendParticles(ParticleTypes.ENCHANT, x, y, z,
+                    5, 0.2, 0.2, 0.2, 0.01);
+        } else {
+            level.addParticle(ParticleTypes.ENCHANT, x, y, z,
+                    0, 0, 0);
+        }
     }
 
     private static void countChestContent(ChestBlockEntity chestBlockEntity, HashMap<String, Integer> itemMap) {
         for (int i = 0; i < chestBlockEntity.getContainerSize(); i++) {
             ItemStack itemStack = chestBlockEntity.getItem(i);
 
-            // proceed if slot is empty
+            // proceed if slot is not empty
             if (!itemStack.isEmpty()) {
                 String itemName = chestBlockEntity.getItem(i).getDisplayName().getString();
-                itemName = itemName.replace("[", "").replace("]", ""); // Entfernt die Klammern
+                itemName = itemName.replace("[", "").replace("]", ""); // Removes the brackets
 
                 // stack count in slot
                 int itemCount = itemStack.getCount();
@@ -112,33 +115,32 @@ public class CheckYourChest {
         }
     }
 
-
     @SubscribeEvent
     public void onServerTick(TickEvent.ServerTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) { // Sicherstellen, dass wir im End-Tick sind
-            tickCounter++; // Tick-Zähler erhöhen
+        if (event.phase == TickEvent.Phase.END) {
+            tickCounter++;
             if (selectedChestBlockEntity != null) {
-                ServerLevel serverLevel = (ServerLevel) selectedChestBlockEntity.getLevel();
+                Level level = selectedChestBlockEntity.getLevel();
                 BlockPos chestPos = selectedChestBlockEntity.getBlockPos();
 
-                assert serverLevel != null;
-                renderChestParticles(serverLevel, chestPos);
+                assert level != null;
+                renderChestParticles(level, chestPos);
 
                 if (connectedChestBlockEntity != null) {
-                    System.out.println("Rendering");
                     BlockPos connectedChestPos = connectedChestBlockEntity.getBlockPos();
-                    renderChestParticles(serverLevel, connectedChestPos);
-
+                    renderChestParticles(level, connectedChestPos);
                 }
             }
             // checkInterval provides the ticks from Config file
             if (tickCounter >= (Config.checkInterval)) {
 
                 if (selectedChestBlockEntity != null) {
+                    BlockPos chestPos = selectedChestBlockEntity.getBlockPos();
+                    selectedChestBlockEntity = (ChestBlockEntity) event.getServer().overworld().getBlockEntity(chestPos);
+
                     BlockEntity blockEntity = selectedChestBlockEntity;
 
                     if (blockEntity instanceof ChestBlockEntity) {
-
                         // Check if it's a double chest
                         ChestType chestType = selectedChestBlockEntity.getBlockState().getValue(ChestBlock.TYPE);
 
@@ -153,6 +155,7 @@ public class CheckYourChest {
                             }
                         } else {
                             LOGGER.debug("This is a single chest");
+                            connectedChestBlockEntity = null; // Ensure this is null for single chests
                         }
                     }
 
@@ -177,9 +180,8 @@ public class CheckYourChest {
                     // send all items via embed
                     if (!descriptionBuilder.isEmpty()) {
                         sendWebhookWithEmbed("Marked Chest", "https://minecraft.wiki/images/Invicon_Chest.png", descriptionBuilder.toString());
+                        System.out.println("Embed has been sent.");
                     }
-
-
                 }
 
                 // reset tick counter
@@ -231,42 +233,42 @@ public class CheckYourChest {
 
     @SubscribeEvent
     public void onMarkingStickUse(PlayerInteractEvent.RightClickBlock event) {
-        BlockState blockState = event.getLevel().getBlockState(event.getPos());
-        //Check if player wants to mark a chest
-        if (event.getItemStack().getHoverName().getString().equals("Marking Stick") && blockState.getBlock().equals(Blocks.CHEST) && event.getEntity().isCrouching() && selectedChestBlockEntity == null) {
+        if (event.getItemStack().getHoverName().getString().equals("Marking Stick")) {
             event.setCanceled(true);
 
-            selectedChestBlockEntity = (ChestBlockEntity) event.getLevel().getBlockEntity(event.getPos());
+            BlockState blockState = event.getLevel().getBlockState(event.getPos());
 
+            // Check if player wants to mark a chest
+            if (blockState.getBlock() instanceof ChestBlock && event.getEntity().isCrouching() && selectedChestBlockEntity == null) {
+                selectedChestBlockEntity = (ChestBlockEntity) event.getLevel().getBlockEntity(event.getPos());
 
-            event.getEntity().sendSystemMessage(
-                    Component.literal("Marked Chest at " + event.getPos().getX() + " " + event.getPos().getY() + " " + event.getPos().getZ())
-            );
+                event.getEntity().sendSystemMessage(
+                        Component.literal("Marked Chest at " + event.getPos().getX() + " " + event.getPos().getY() + " " + event.getPos().getZ())
+                );
 
-            // immediately check if it's a double chest
-            ChestType chestType = selectedChestBlockEntity.getBlockState().getValue(ChestBlock.TYPE);
-            if (chestType != ChestType.SINGLE) {
-                Direction connectedDirection = ChestBlock.getConnectedDirection(selectedChestBlockEntity.getBlockState());
-                BlockPos connectedPos = selectedChestBlockEntity.getBlockPos().relative(connectedDirection);
-                connectedChestBlockEntity = (ChestBlockEntity) Objects.requireNonNull(selectedChestBlockEntity.getLevel()).getBlockEntity(connectedPos);
+                // immediately check if it's a double chest
+                ChestType chestType = selectedChestBlockEntity.getBlockState().getValue(ChestBlock.TYPE);
+                if (chestType != ChestType.SINGLE) {
+                    Direction connectedDirection = ChestBlock.getConnectedDirection(selectedChestBlockEntity.getBlockState());
+                    BlockPos connectedPos = selectedChestBlockEntity.getBlockPos().relative(connectedDirection);
+                    connectedChestBlockEntity = (ChestBlockEntity) Objects.requireNonNull(selectedChestBlockEntity.getLevel()).getBlockEntity(connectedPos);
 
-                if (connectedChestBlockEntity != null) {
-                    event.getEntity().sendSystemMessage(
-                            Component.literal("Double Chest connected at " + connectedPos.getX() + " " + connectedPos.getY() + " " + connectedPos.getZ())
-                    );
+                    if (connectedChestBlockEntity != null) {
+                        event.getEntity().sendSystemMessage(
+                                Component.literal("Double Chest connected at " + connectedPos.getX() + " " + connectedPos.getY() + " " + connectedPos.getZ())
+                        );
+                    }
                 }
+
+                // saving pos and entity
+                EntityDataManager.saveData(selectedChestBlockEntity.getBlockPos());
+
+                LOGGER.debug("Marked Chest at " + event.getPos().getX() + " " + event.getPos().getY() + " " + event.getPos().getZ());
+                return;
             }
 
-            //saving pos and entity
-            EntityDataManager.saveData(selectedChestBlockEntity.getBlockPos());
-
-            LOGGER.debug("Marked Chest at " + event.getPos().getX() + " " + event.getPos().getY() + " " + event.getPos().getZ());
-
-            //Check if player wants to unmark a chest
-        } else if (event.getItemStack().getHoverName().getString().equals("Marking Stick") && event.getEntity().isCrouching()) {
-
-            if (selectedChestBlockEntity != null) {
-                event.setCanceled(true);
+            // Check if player wants to unmark a chest
+            if (event.getEntity().isCrouching() && (!(blockState.getBlock() instanceof ChestBlock)) && selectedChestBlockEntity != null) {
                 selectedChestBlockEntity = null;
                 connectedChestBlockEntity = null;
                 event.getEntity().sendSystemMessage(
