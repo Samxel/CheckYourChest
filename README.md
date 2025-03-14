@@ -21,7 +21,6 @@ Whether you're away from your base or want to monitor your storage, CheckYourChe
 - **Mark Any Chest**  
   Mark any single or double chest in your world and monitor its contents.
 
-  
 - **Track Single and Double Chests**  
   Automatically handle both single and double chests with ease.
   
@@ -67,8 +66,9 @@ Whether you're away from your base or want to monitor your storage, CheckYourChe
    To set up a Discord webhook, follow these steps:
    - Go to your Discord channel settings.
    - Under the "Integrations" tab, create a new webhook and copy its URL.
-   - Start the server / world once, close it again and open the mod's configuration file (`config/checkyourchest-common.toml`).
-   - Replace the URL with the one you copied.
+   - Start the server / client world once.
+   - Now you can either enter the command `/cyc setWebhookURL <URL>` or paste the URL in the mod's configuration file (`config/checkyourchest-common.toml`).
+   - Restart the server.
 
 
 2. **Interval Settings**  
