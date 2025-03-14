@@ -5,6 +5,11 @@
 <h1 align="center">CheckYourChest<br>1.20.1</h1>
 
 
+<p align="center">
+  <img src="https://img.shields.io/github/v/release/Samxel/checkyourchest" alt="GitHub release">
+  <img src="https://img.shields.io/github/downloads/Samxel/checkyourchest/total" alt="GitHub all releases">
+  <img src="https://img.shields.io/github/issues/Samxel/checkyourchest" alt="GitHub issues">
+</p>
 
 
 
