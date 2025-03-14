@@ -4,6 +4,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.ChatFormatting;
@@ -29,6 +30,10 @@ public class CheckYourChestCommand {
         dispatcher.register(Commands.literal("cyc")
                 //give stick method
                 .executes(CheckYourChestCommand::executeStart)
+                //set webhook url
+                .then(Commands.literal("setWebhookURL")
+                        .then(Commands.argument("URL", StringArgumentType.greedyString())
+                                .executes(CheckYourChestCommand::executeSetWebhookURL)))
                 //set check interval
                 .then(Commands.literal("setCheckInterval")
                         .then(Commands.argument("checkInterval", IntegerArgumentType.integer(1))
@@ -95,6 +100,16 @@ public class CheckYourChestCommand {
 
         source.sendSuccess(() -> Component.literal("Set chunk force loading to " + loadState), true);
 
+        return Command.SINGLE_SUCCESS;
+    }
+    private static int executeSetWebhookURL(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        CommandSourceStack source = context.getSource();
+
+        String webhookURL = StringArgumentType.getString(context, "URL");
+
+        Config.setWebhookURL(webhookURL);
+
+        source.sendSuccess(() -> Component.literal("Set webhook URL to\n" + webhookURL), true);
         return Command.SINGLE_SUCCESS;
     }
 

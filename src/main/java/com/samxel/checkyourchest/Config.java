@@ -57,4 +57,9 @@ public class Config {
         // Save the updated config value
         checkInterval = (minuteCheckInterval * 60) * 20;
     }
+
+    public static void setWebhookURL(String webhookURL) {
+    // Update the in-memory config value
+    DISCORD_WEBHOOK.set(webhookURL);
+    }
 }
