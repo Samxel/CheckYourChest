@@ -67,7 +67,9 @@ Whether you're away from your base or want to monitor your storage, CheckYourChe
    To set up a Discord webhook, follow these steps:
    - Go to your Discord channel settings.
    - Under the "Integrations" tab, create a new webhook and copy its URL.
-   - Paste the webhook URL into the mod's configuration file (`config/checkyourchest-common.toml`).
+   - Set the URL in-game: `/cyc setWebhookURL <URL>`
+   - Additionally , you can paste the webhook URL into the mod's configuration file (`config/checkyourchest-common.toml`).
+
 
 2. **Interval Settings**  
    You can customize how often chest updates are sent to the webhook by adjusting the `checkInterval` in the config file. This value is in minutes. For example:
