@@ -5,6 +5,11 @@
 <h1 align="center">CheckYourChest<br>1.20.1</h1>
 
 
+<p align="center">
+  <img src="https://img.shields.io/github/v/release/Samxel/checkyourchest" alt="GitHub release">
+  <img src="https://img.shields.io/github/downloads/Samxel/checkyourchest/total" alt="GitHub all releases">
+  <img src="https://img.shields.io/github/issues/Samxel/checkyourchest" alt="GitHub issues">
+</p>
 
 
 
@@ -21,7 +26,6 @@ Whether you're away from your base or want to monitor your storage, CheckYourChe
 - **Mark Any Chest**  
   Mark any single or double chest in your world and monitor its contents.
 
-  
 - **Track Single and Double Chests**  
   Automatically handle both single and double chests with ease.
   
@@ -67,7 +71,10 @@ Whether you're away from your base or want to monitor your storage, CheckYourChe
    To set up a Discord webhook, follow these steps:
    - Go to your Discord channel settings.
    - Under the "Integrations" tab, create a new webhook and copy its URL.
-   - Paste the webhook URL into the mod's configuration file (`config/checkyourchest-common.toml`).
+   - Start the server / client world once.
+   - Now you can either enter the command `/cyc setWebhookURL <URL>` or paste the URL in the mod's configuration file (`config/checkyourchest-common.toml`).
+   - Restart the server.
+
 
 2. **Interval Settings**  
    You can customize how often chest updates are sent to the webhook by adjusting the `checkInterval` in the config file. This value is in minutes. For example:
