@@ -1,7 +1,13 @@
 package com.samxel.checkyourchest;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.logging.LogUtils;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -15,6 +21,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
@@ -27,6 +38,10 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 
 import java.io.OutputStream;
@@ -73,7 +88,7 @@ public class CheckYourChest {
         LOGGER.info("Loading force loaded chunks");
         if (Config.isChunkForceLoaded) {
             ChunkLoader.forceLoadChunk(event.getServer().overworld(),
-                ChunkLoader.getChunkPosFromBlockPos(selectedChestBlockEntity.getBlockPos()));
+                    ChunkLoader.getChunkPosFromBlockPos(selectedChestBlockEntity.getBlockPos()));
         }
     }
 
@@ -97,6 +112,111 @@ public class CheckYourChest {
                     0, 0, 0);
         }
     }
+
+private static void renderBlockHitbox(PoseStack poseStack, VertexConsumer vertexConsumer,
+                                      Level level, BlockPos blockPos, float red, float green, float blue, float alpha) {
+    BlockState blockState = level.getBlockState(blockPos);
+    VoxelShape shape = blockState.getShape(level, blockPos);
+
+    if (shape.isEmpty()) {
+        shape = Shapes.block();
+    }
+
+    Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+    Vec3 cameraPos = camera.getPosition();
+
+    poseStack.pushPose();
+    LevelRenderer.renderVoxelShape(
+        poseStack,
+        vertexConsumer,
+        shape,
+        -blockPos.getX() + cameraPos.x,
+        -blockPos.getY() + cameraPos.y,
+        -blockPos.getZ() + cameraPos.z,
+        red, green, blue, alpha,
+        false
+    );
+    poseStack.popPose();
+}
+
+@SubscribeEvent
+public void onRenderLevelLast(RenderLevelStageEvent event) {
+    if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL) return;
+
+    Minecraft mc = Minecraft.getInstance();
+    if (mc.level == null || selectedChestBlockEntity == null) return;
+
+    Camera camera = mc.gameRenderer.getMainCamera();
+    Vec3 cameraPos = camera.getPosition();
+    BlockPos blockPos = selectedChestBlockEntity.getBlockPos();
+
+    // Transformationsmatrix neu berechnen
+    PoseStack poseStack = event.getPoseStack();
+    poseStack.pushPose();
+
+    // Kritische Kamera-Transformation
+    poseStack.translate(
+        blockPos.getX() - cameraPos.x,
+        blockPos.getY() - cameraPos.y,
+        blockPos.getZ() - cameraPos.z
+    );
+
+    // Projektionsmatrix anwenden
+    Matrix4f projMatrix = event.getProjectionMatrix();
+    poseStack.mulPoseMatrix(projMatrix);
+
+    VertexConsumer vertexConsumer = mc.renderBuffers()
+        .outlineBufferSource().getBuffer(RenderType.lines());
+
+    // Render-Einstellungen
+    RenderSystem.lineWidth(3.0F);
+    RenderSystem.disableDepthTest();
+    RenderSystem.enableBlend();
+
+    // VoxelShape rendern
+    VoxelShape shape = mc.level.getBlockState(blockPos).getShape(mc.level, blockPos);
+    if (shape.isEmpty()) {
+        shape = Shapes.block();
+    }
+
+    LevelRenderer.renderVoxelShape(
+        poseStack,
+        vertexConsumer,
+        shape,
+        0, 0, 0, // Kein zusätzlicher Offset
+        0.0f, 0.0f, 1.0f, 0.8f,
+        false
+    );
+
+    // Verbundene Kiste rendern
+    if (connectedChestBlockEntity != null) {
+        BlockPos connectedPos = connectedChestBlockEntity.getBlockPos();
+        poseStack.pushPose();
+        poseStack.translate(
+            connectedPos.getX() - blockPos.getX(),
+            connectedPos.getY() - blockPos.getY(),
+            connectedPos.getZ() - blockPos.getZ()
+        );
+        LevelRenderer.renderVoxelShape(
+            poseStack,
+            vertexConsumer,
+            shape,
+            0, 0, 0,
+            0.0f, 0.0f, 1.0f, 0.8f,
+            false
+        );
+        poseStack.popPose();
+    }
+
+    poseStack.popPose();
+    mc.renderBuffers().outlineBufferSource().endOutlineBatch();
+    RenderSystem.enableDepthTest();
+}
+
+
+
+
+
 
     private static void countChestContent(ChestBlockEntity chestBlockEntity, HashMap<String, Integer> itemMap) {
         for (int i = 0; i < chestBlockEntity.getContainerSize(); i++) {
